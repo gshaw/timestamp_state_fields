@@ -1,31 +1,65 @@
 require 'test_helper'
 
 class TimestampStateFieldsTest < ActiveSupport::TestCase
-  setup do
-    @bob = User.create(name: "Bob", subscribed_at: Time.current)
-    @betty = User.create(name: "Betty")
+  def build_subscribed_user(name: "Bob")
+    User.new(name: name, subscribed_at: Time.current)
   end
 
-  def test_subscribed_and_not_subscribed_methods
-    assert_not_nil @bob.subscribed_at
-    assert_equal true, @bob.subscribed?
-    assert_equal false, @bob.not_subscribed?
-
-    assert_nil @betty.subscribed_at
-    assert_equal false, @betty.subscribed?
-    assert_equal true, @betty.not_subscribed?
+  def build_not_subscribed_user(name: "Bob")
+    User.new(name: name, subscribed_at: nil)
   end
 
-  def test_mark_as_and_mark_as_not
-    @betty.mark_as_subscribed
-    assert_not_nil @betty.subscribed_at
-
-    @betty.mark_as_not_subscribed
-    assert_nil @betty.subscribed_at
+  def test_subscribed?
+    user = build_not_subscribed_user
+    refute user.subscribed?
+    assert user.not_subscribed?
+    user.subscribed_at = Time.current
+    assert user.subscribed?
+    refute user.not_subscribed?
   end
 
-  def test_subscribed_and_not_subscribed_scopes
-    assert_includes User.subscribed, @bob
-    assert_includes User.not_subscribed, @betty
+  def test_mark_as_subscribed
+    user = build_not_subscribed_user
+    refute user.subscribed?
+    user.mark_as_subscribed
+    assert user.subscribed?
+  end
+
+  def test_mark_as_not_subscribed
+    user = build_subscribed_user
+    assert user.subscribed?
+    user.mark_as_not_subscribed
+    refute user.subscribed?
+  end
+
+  def test_is_subscribed
+    user = build_subscribed_user
+    assert user.subscribed?
+    assert user.is_subscribed
+  end
+
+  def test_is_subscribed_assignment
+    user = build_not_subscribed_user
+    refute user.subscribed?
+    user.is_subscribed = "1"
+    assert user.subscribed?
+    user.is_subscribed = "0"
+    assert user.not_subscribed?
+  end
+
+  def test_subscribed_scope
+    build_subscribed_user.save!
+    build_not_subscribed_user.save!
+    users = User.subscribed
+    assert users.count > 0
+    users.each { |u| assert u.subscribed? }
+  end
+
+  def test_not_subscribed_scope
+    build_subscribed_user.save!
+    build_not_subscribed_user.save!
+    users = User.not_subscribed
+    assert users.count > 0
+    users.each { |u| refute u.subscribed? }
   end
 end

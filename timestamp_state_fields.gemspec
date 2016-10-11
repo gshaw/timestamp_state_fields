@@ -14,10 +14,11 @@ Gem::Specification.new do |s|
   s.description = "Implements ActiveRecord state fields based on timestamp columns"
   s.license     = "MIT"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_dependency "rails", [">= 3.0", "< 6.0"]
+  s.add_dependency "rails", [">= 3.0"]
 
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "rails", [">= 5.0"] # tests assume Rails 5
 end

@@ -3,9 +3,10 @@
 Treat timestamp columns as state fields in a model.
 
 ## Usage
+
 Call timestamp_state_fields on timestamp columns that represents state of your model, e.g.
 
-    Class Order < ActiveRecord::Base
+    class Order < ActiveRecord::Base
       include TimestampStateFields
       timestamp_state_fields :processed_at, :canceled_at
     end
@@ -28,6 +29,10 @@ It will enable the following interactions on user model.
 
     # You can combine multiple scopes
     Order.processed.not_canceled.count
+
+    # Use the is_processed accessors to show state in an form, typically in an
+    # admin section.
+    <%= f.check_box :is_processed, label: "Processed" %>
 
 ## Installation
 
